@@ -5,6 +5,7 @@ import 'package:database_driven_fun/model/fetched_jobs_model.dart';
 import 'package:database_driven_fun/model/github_job.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 void main() => runApp(MyApp());
 
@@ -76,11 +77,12 @@ class MyApp extends StatelessWidget {
           job.title,
         ),
         subtitle: Text(job.company),
-        leading: Image.network(
-          job.companyLogo,
+        leading: FadeInImage.memoryNetwork(
+          image: job.companyLogo,
           width: 100.0,
           height: 100.0,
           fit: BoxFit.contain,
+          placeholder: kTransparentImage,
         ),
       ),
     );
