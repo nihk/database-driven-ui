@@ -61,6 +61,7 @@ class GitHubJobsRepository {
 //      return jobs;
 //    }
 
+    await _deleteAll();
     List<GitHubJob> jobs = await fetchJobs();
     await insertAll(jobs);
     return await queryAll();

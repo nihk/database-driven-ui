@@ -13,21 +13,27 @@ class MyApp extends StatelessWidget {
       GitHubJobsRepository(DatabaseProvider.get);
   static int _jobId = 1;
 
-  ListView _cachedListView;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.dark(),
       home: ChangeNotifierProvider(
-        builder: (context) =>
-            FutureModel<GitHubJob>(repository.fetchThenQuery()),
+        builder: (context) {
+          return FutureModel<GitHubJob>(repository.fetchThenQuery());
+        },
         child: Consumer<FutureModel<GitHubJob>>(
           builder: (context, model, child) {
             return Scaffold(
               appBar: AppBar(
                 title: Text('Database Driven UI'),
                 actions: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.refresh),
+                    onPressed: () {
+                      model.setFuture(repository.fetchThenQuery());
+                    },
+                    tooltip: "Refresh",
+                  ),
                   IconButton(
                     icon: Icon(Icons.plus_one),
                     onPressed: () {
@@ -44,16 +50,11 @@ class MyApp extends StatelessWidget {
                     case ConnectionState.none:
                     case ConnectionState.waiting:
                     case ConnectionState.active:
-                      if (_cachedListView != null) {
-                        // Keep showing the cached ListView while fetching
-                        // or querying happens in the background
-                        return _cachedListView;
-                      }
                       return Center(child: CircularProgressIndicator());
                     case ConnectionState.done:
                       if (snapshot.hasData) {
                         List<GitHubJob> jobs = snapshot.data;
-                        ListView listView = ListView.separated(
+                        return ListView.separated(
                             separatorBuilder: (context, index) => Divider(
                                   height: 0.0,
                                   color: Colors.black,
@@ -81,8 +82,6 @@ class MyApp extends StatelessWidget {
                                 ),
                               );
                             });
-                        _cachedListView = listView;
-                        return listView;
                       } else {
                         return Text('Error: ${snapshot.error}');
                       }
