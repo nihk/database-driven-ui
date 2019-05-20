@@ -38,6 +38,7 @@ class GitHubJob {
         title: json['title'],
         description: json['description'],
         howToApply: json['how_to_apply'],
-        companyLogo: json['company_logo'],
+        companyLogo: json['company_logo']
+            ?? "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
       );
 }

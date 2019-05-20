@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+// todo: pagination
 class FutureModel<Data> extends ChangeNotifier {
   Future<List<Data>> _future;
   Future<List<Data>> get future => _future;

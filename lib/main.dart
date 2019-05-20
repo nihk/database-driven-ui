@@ -1,4 +1,5 @@
 import 'package:database_driven_fun/data/database_provider.dart';
+import 'package:database_driven_fun/github_job_detail.dart';
 import 'package:database_driven_fun/github_jobs_repository.dart';
 import 'package:database_driven_fun/model/future_model.dart';
 import 'package:database_driven_fun/model/github_job.dart';
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData.dark(),
       home: ChangeNotifierProvider(
         builder: (context) =>
             FutureModel<GitHubJob>(repository.fetchThenQuery()),
@@ -60,15 +62,18 @@ class MyApp extends StatelessWidget {
                             itemBuilder: (context, index) {
                               final GitHubJob job = jobs[index];
                               return InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          GitHubJobDetail(gitHubJob: job)));
+                                },
                                 child: ListTile(
                                   title: Text(
                                     job.title,
                                   ),
                                   subtitle: Text(job.company),
                                   leading: Image.network(
-                                    job.companyLogo ??
-                                        "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+                                    job.companyLogo,
                                     width: 100.0,
                                     height: 100.0,
                                     fit: BoxFit.contain,
