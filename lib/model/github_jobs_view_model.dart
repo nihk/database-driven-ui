@@ -12,7 +12,8 @@ class GitHubJobViewModel extends ChangeNotifier {
 
   GitHubJobViewModel({@required this.repository});
 
-  Future<void> _run(Future<List<GitHubJob>> future) async {
+  Future<void> _run(Future<List<GitHubJob>> Function() run) async {
+
     if (_jobs.state == ResourceState.LOADING) {
       return;
     }
@@ -24,7 +25,7 @@ class GitHubJobViewModel extends ChangeNotifier {
     _jobs = Resource.loading(gitHubJobs);
     notifyListeners();
 
-    gitHubJobs = await future.catchError((error) {
+    gitHubJobs = await run().catchError((error) {
       _jobs = Resource.error(_jobs.data, error);
     });
     if (gitHubJobs != null) {
@@ -34,10 +35,16 @@ class GitHubJobViewModel extends ChangeNotifier {
   }
 
   void purgeFetchInsertQuery() {
-    _run(repository.purgeFetchInsertQuery());
+    Future<List<GitHubJob>> Function() run = () {
+        return repository.purgeFetchInsertQuery();
+    };
+    _run(run);
   }
 
   void insertGitHubJob(GitHubJob gitHubJob) {
-    _run(repository.insert(gitHubJob));
+    Future<List<GitHubJob>> Function() run = () {
+        return repository.insert(gitHubJob);
+    };
+    _run(run);
   }
 }
