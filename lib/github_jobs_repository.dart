@@ -55,8 +55,8 @@ class GitHubJobsRepository {
   }
 
   Future<List<GitHubJob>> purgeFetchInsertQuery() async {
-    await _deleteAll();
     List<GitHubJob> jobs = await fetchJobs();
+    await _deleteAll();
     await insertAll(jobs);
     return await queryAll();
   }
