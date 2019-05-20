@@ -23,12 +23,9 @@ class GitHubJobsViewModel extends ChangeNotifier {
     _jobs = Resource.loading(gitHubJobs);
     notifyListeners();
 
-    gitHubJobs = await runnable().catchError((error) {
-      _jobs = Resource.error(_jobs.data, error);
-    });
-    if (gitHubJobs != null) {
-      _jobs = Resource.success(gitHubJobs);
-    }
+    _jobs = await runnable()
+        .then((data) => Resource.success(data))
+        .catchError((error) => Resource.error(_jobs.data, error));
     notifyListeners();
   }
 
