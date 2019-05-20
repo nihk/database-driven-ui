@@ -3,17 +3,16 @@ import 'package:database_driven_fun/model/github_job.dart';
 import 'package:database_driven_fun/resource.dart';
 import 'package:flutter/foundation.dart';
 
-class GitHubJobViewModel extends ChangeNotifier {
+class GitHubJobsViewModel extends ChangeNotifier {
   final GitHubJobsRepository repository;
 
   Resource<List<GitHubJob>> _jobs = Resource.success([]);
 
   Resource<List<GitHubJob>> get jobs => _jobs;
 
-  GitHubJobViewModel({@required this.repository});
+  GitHubJobsViewModel({@required this.repository});
 
   Future<void> _run(Future<List<GitHubJob>> Function() run) async {
-
     if (_jobs.state == ResourceState.LOADING) {
       return;
     }

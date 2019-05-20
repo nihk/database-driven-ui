@@ -17,14 +17,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark(),
       home: ChangeNotifierProvider(
         builder: (context) {
+          // fixme: this should be injected less manually, somehow.
           final GitHubJobsRepository repository =
               GitHubJobsRepository(DatabaseProvider.get);
-          GitHubJobViewModel viewModel =
-              GitHubJobViewModel(repository: repository);
+          GitHubJobsViewModel viewModel =
+              GitHubJobsViewModel(repository: repository);
           viewModel.purgeFetchInsertQuery();
           return viewModel;
         },
-        child: Consumer<GitHubJobViewModel>(
+        child: Consumer<GitHubJobsViewModel>(
           builder: (context, viewModel, child) {
             return Scaffold(
               appBar: AppBar(
