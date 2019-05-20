@@ -1,8 +1,9 @@
 import 'package:database_driven_fun/data/database_provider.dart';
 import 'package:database_driven_fun/github_job_detail.dart';
 import 'package:database_driven_fun/github_jobs_repository.dart';
-import 'package:database_driven_fun/model/fetched_jobs_model.dart';
+import 'package:database_driven_fun/model/github_jobs_view_model.dart';
 import 'package:database_driven_fun/model/github_job.dart';
+import 'package:database_driven_fun/resource.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -10,21 +11,21 @@ import 'package:transparent_image/transparent_image.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  final GitHubJobsRepository repository =
-      GitHubJobsRepository(DatabaseProvider.get);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.dark(),
       home: ChangeNotifierProvider(
         builder: (context) {
-          FetchedJobsModel fetchedJobs = FetchedJobsModel();
-          fetchedJobs.setJobs(repository.purgeFetchInsertQuery());
-          return fetchedJobs;
+          final GitHubJobsRepository repository =
+              GitHubJobsRepository(DatabaseProvider.get);
+          GitHubJobViewModel viewModel =
+              GitHubJobViewModel(repository: repository);
+          viewModel.purgeFetchInsertQuery();
+          return viewModel;
         },
-        child: Consumer<FetchedJobsModel>(
-          builder: (context, model, child) {
+        child: Consumer<GitHubJobViewModel>(
+          builder: (context, viewModel, child) {
             return Scaffold(
               appBar: AppBar(
                 title: Text('Database Driven UI'),
@@ -32,14 +33,14 @@ class MyApp extends StatelessWidget {
                   IconButton(
                     icon: Icon(Icons.refresh),
                     onPressed: () {
-                      model.setJobs(repository.purgeFetchInsertQuery());
+                      viewModel.purgeFetchInsertQuery();
                     },
                     tooltip: "Refresh",
                   ),
                   IconButton(
                     icon: Icon(Icons.plus_one),
                     onPressed: () {
-                      model.setJobs(repository.insert(createDummyJob()));
+                      viewModel.insertGitHubJob(createDummyJob());
                     },
                     tooltip: "Add a dummy job",
                   )
@@ -49,13 +50,20 @@ class MyApp extends StatelessWidget {
                 children: <Widget>[
                   ListView.separated(
                     separatorBuilder: (context, index) => Divider(height: 0.0),
-                    itemCount: model.jobs.length,
+                    itemCount: viewModel.jobs.data.length,
                     itemBuilder: (context, index) {
-                      return createJobTile(context, model.jobs[index]);
+                      return createJobTile(context, viewModel.jobs.data[index]);
                     },
                   ),
-                  if (model.state == ResourceState.LOADING)
-                    Center(child: CircularProgressIndicator())
+                  if (viewModel.jobs.state == ResourceState.LOADING)
+                    Center(child: CircularProgressIndicator()),
+                  if (viewModel.jobs.state == ResourceState.ERROR)
+                    Center(
+                      child: Text(
+                        'FAILURE',
+                        style: TextStyle(backgroundColor: Colors.red),
+                      ),
+                    ),
                 ],
               ),
             );
