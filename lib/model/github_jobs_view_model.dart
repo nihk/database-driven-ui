@@ -33,16 +33,14 @@ class GitHubJobsViewModel extends ChangeNotifier {
   }
 
   void purgeFetchInsertQuery() {
-    Future<List<GitHubJob>> Function() runnable = () {
-        return repository.purgeFetchInsertQuery();
-    };
+    Future<List<GitHubJob>> Function() runnable =
+        () => repository.purgeFetchInsertQuery();
     _run(runnable);
   }
 
   void insertGitHubJob(GitHubJob gitHubJob) {
-    Future<List<GitHubJob>> Function() runnable = () {
-        return repository.insert(gitHubJob);
-    };
+    Future<List<GitHubJob>> Function() runnable =
+        () => repository.insert(gitHubJob);
     _run(runnable);
   }
 }
