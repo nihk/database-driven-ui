@@ -16,6 +16,7 @@ class GitHubJobsViewModel extends ChangeNotifier {
     if (_jobs.state == ResourceState.LOADING) {
       return;
     }
+
     _jobs = Resource.loading(_jobs.data);
     notifyListeners();
 
@@ -29,14 +30,10 @@ class GitHubJobsViewModel extends ChangeNotifier {
   }
 
   void purgeFetchInsertQuery() {
-    Future<List<GitHubJob>> Function() runnable =
-        () => repository.purgeFetchInsertQuery();
-    _run(runnable);
+    _run(() => repository.purgeFetchInsertQuery());
   }
 
   void insertGitHubJob(GitHubJob gitHubJob) {
-    Future<List<GitHubJob>> Function() runnable =
-        () => repository.insert(gitHubJob);
-    _run(runnable);
+    _run(() => repository.insert(gitHubJob));
   }
 }
