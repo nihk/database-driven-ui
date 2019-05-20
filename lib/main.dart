@@ -59,10 +59,11 @@ class MyApp extends StatelessWidget {
                   if (viewModel.jobs.state == ResourceState.LOADING)
                     Center(child: CircularProgressIndicator()),
                   if (viewModel.jobs.state == ResourceState.ERROR)
-                    Center(
-                      child: Text(
-                        'FAILURE',
-                        style: TextStyle(backgroundColor: Colors.red),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        decoration: BoxDecoration(color: Colors.red),
+                        child: Text('Error: ${viewModel.jobs.exception}'),
                       ),
                     ),
                 ],
