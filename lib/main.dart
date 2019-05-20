@@ -1,7 +1,7 @@
 import 'package:database_driven_fun/data/database_provider.dart';
 import 'package:database_driven_fun/github_job_detail.dart';
 import 'package:database_driven_fun/github_jobs_repository.dart';
-import 'package:database_driven_fun/model/fetched_jobs.dart';
+import 'package:database_driven_fun/model/fetched_jobs_model.dart';
 import 'package:database_driven_fun/model/github_job.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,12 +18,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark(),
       home: ChangeNotifierProvider(
         builder: (context) {
-          FetchedJobs fetchedJobs = FetchedJobs();
-          fetchedJobs.setJobs(repository.fetchThenQuery());
-          print('Fetching initial jobs');
+          FetchedJobsModel fetchedJobs = FetchedJobsModel();
+          fetchedJobs.setJobs(repository.purgeFetchInsertQuery());
           return fetchedJobs;
         },
-        child: Consumer<FetchedJobs>(
+        child: Consumer<FetchedJobsModel>(
           builder: (context, model, child) {
             return Scaffold(
               appBar: AppBar(
@@ -32,7 +31,7 @@ class MyApp extends StatelessWidget {
                   IconButton(
                     icon: Icon(Icons.refresh),
                     onPressed: () {
-                      model.setJobs(repository.fetchThenQuery());
+                      model.setJobs(repository.purgeFetchInsertQuery());
                     },
                     tooltip: "Refresh",
                   ),

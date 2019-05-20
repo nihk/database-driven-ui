@@ -54,13 +54,7 @@ class GitHubJobsRepository {
     return dao.fromList(maps);
   }
 
-  Future<List<GitHubJob>> fetchThenQuery() async {
-    // todo: pass in a predicate to determine whether to fetch or not
-//    List<GitHubJob> jobs = await queryAll();
-//    if (jobs.isNotEmpty) {
-//      return jobs;
-//    }
-
+  Future<List<GitHubJob>> purgeFetchInsertQuery() async {
     await _deleteAll();
     List<GitHubJob> jobs = await fetchJobs();
     await insertAll(jobs);
