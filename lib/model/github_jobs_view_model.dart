@@ -19,8 +19,7 @@ class GitHubJobsViewModel extends ChangeNotifier {
     _jobs = Resource.loading(_jobs.data);
     notifyListeners();
 
-    List<GitHubJob> gitHubJobs = await repository.queryAll();
-    _jobs = Resource.loading(gitHubJobs);
+    _jobs = Resource.loading(await repository.queryAll());
     notifyListeners();
 
     _jobs = await runnable()
