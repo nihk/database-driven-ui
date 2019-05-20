@@ -20,7 +20,6 @@ class GitHubJobViewModel extends ChangeNotifier {
     _jobs = Resource.loading(_jobs.data);
     notifyListeners();
 
-    // fixme: why is this empty? the future is being started at the moment _run is called
     List<GitHubJob> gitHubJobs = await repository.queryAll();
     _jobs = Resource.loading(gitHubJobs);
     notifyListeners();
