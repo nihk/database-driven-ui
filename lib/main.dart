@@ -1,7 +1,7 @@
 import 'package:database_driven_fun/data/database_provider.dart';
 import 'package:database_driven_fun/github_job_detail.dart';
 import 'package:database_driven_fun/github_jobs_repository.dart';
-import 'package:database_driven_fun/model/future_model.dart';
+import 'package:database_driven_fun/model/fetched_jobs.dart';
 import 'package:database_driven_fun/model/github_job.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +11,6 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   final GitHubJobsRepository repository =
       GitHubJobsRepository(DatabaseProvider.get);
-  static int _jobId = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +18,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark(),
       home: ChangeNotifierProvider(
         builder: (context) {
-          return FutureModel<GitHubJob>(repository.fetchThenQuery());
+          FetchedJobs fetchedJobs = FetchedJobs();
+          fetchedJobs.setJobs(repository.fetchThenQuery());
+          print('Fetching initial jobs');
+          return fetchedJobs;
         },
-        child: Consumer<FutureModel<GitHubJob>>(
+        child: Consumer<FetchedJobs>(
           builder: (context, model, child) {
             return Scaffold(
               appBar: AppBar(
@@ -30,63 +32,31 @@ class MyApp extends StatelessWidget {
                   IconButton(
                     icon: Icon(Icons.refresh),
                     onPressed: () {
-                      model.setFuture(repository.fetchThenQuery());
+                      model.setJobs(repository.fetchThenQuery());
                     },
                     tooltip: "Refresh",
                   ),
                   IconButton(
                     icon: Icon(Icons.plus_one),
                     onPressed: () {
-                      model.setFuture(repository.insert(createDummyJob()));
+                      model.setJobs(repository.insert(createDummyJob()));
                     },
                     tooltip: "Add a dummy job",
                   )
                 ],
               ),
-              body: FutureBuilder<List<GitHubJob>>(
-                future: model.future,
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.waiting:
-                    case ConnectionState.active:
-                      return Center(child: CircularProgressIndicator());
-                    case ConnectionState.done:
-                      if (snapshot.hasData) {
-                        List<GitHubJob> jobs = snapshot.data;
-                        return ListView.separated(
-                            separatorBuilder: (context, index) => Divider(
-                                  height: 0.0,
-                                  color: Colors.black,
-                                ),
-                            itemCount: jobs.length,
-                            itemBuilder: (context, index) {
-                              final GitHubJob job = jobs[index];
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          GitHubJobDetail(gitHubJob: job)));
-                                },
-                                child: ListTile(
-                                  title: Text(
-                                    job.title,
-                                  ),
-                                  subtitle: Text(job.company),
-                                  leading: Image.network(
-                                    job.companyLogo,
-                                    width: 100.0,
-                                    height: 100.0,
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                              );
-                            });
-                      } else {
-                        return Text('Error: ${snapshot.error}');
-                      }
-                  }
-                },
+              body: Stack(
+                children: <Widget>[
+                  ListView.separated(
+                    separatorBuilder: (context, index) => Divider(height: 0.0),
+                    itemCount: model.jobs.length,
+                    itemBuilder: (context, index) {
+                      return createJobTile(context, model.jobs[index]);
+                    },
+                  ),
+                  if (model.state == ResourceState.LOADING)
+                    Center(child: CircularProgressIndicator())
+                ],
               ),
             );
           },
@@ -95,22 +65,46 @@ class MyApp extends StatelessWidget {
     );
   }
 
+  Widget createJobTile(BuildContext context, GitHubJob job) {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (BuildContext context) =>
+                GitHubJobDetail(gitHubJob: job)));
+      },
+      child: ListTile(
+        title: Text(
+          job.title,
+        ),
+        subtitle: Text(job.company),
+        leading: Image.network(
+          job.companyLogo,
+          width: 100.0,
+          height: 100.0,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+
+  static int _dummyJobId = 0;
+
   GitHubJob createDummyJob() {
     GitHubJob job = GitHubJob(
-      id: _jobId.toString(),
+      id: _dummyJobId.toString(),
       url: 'http://example.com',
       createdAt: "0",
       company: "The Internet",
       companyUrl: "http://example.com",
       location: "Earth",
-      title: "Senior Flutter Developer #$_jobId",
+      title: "Senior Flutter Developer #$_dummyJobId",
       type: "Full time",
       description: "You will write code like a monkey",
       howToApply: "Carrier pidgeon",
       companyLogo: "https://www.w3schools.com/html/pic_trulli.jpg",
     );
 
-    ++_jobId;
+    ++_dummyJobId;
 
     return job;
   }
