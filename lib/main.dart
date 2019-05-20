@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
               GitHubJobsRepository(DatabaseProvider.get);
           GitHubJobsViewModel viewModel =
               GitHubJobsViewModel(repository: repository);
-          viewModel.purgeFetchInsertQuery();
+          viewModel.fetchPurgeInsertQuery();
           return viewModel;
         },
         child: Consumer<GitHubJobsViewModel>(
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
                   IconButton(
                     icon: Icon(Icons.refresh),
                     onPressed: () {
-                      viewModel.purgeFetchInsertQuery();
+                      viewModel.fetchPurgeInsertQuery();
                     },
                     tooltip: "Refresh",
                   ),

@@ -4,12 +4,10 @@ import 'package:database_driven_fun/resource.dart';
 import 'package:flutter/foundation.dart';
 
 class GitHubJobsViewModel extends ChangeNotifier {
-  final GitHubJobsRepository repository;
-
   Resource<List<GitHubJob>> _jobs = Resource.success([]);
-
   Resource<List<GitHubJob>> get jobs => _jobs;
 
+  final GitHubJobsRepository repository;
   GitHubJobsViewModel({@required this.repository});
 
   Future<void> _run(Future<List<GitHubJob>> Function() runnable) async {
@@ -29,8 +27,8 @@ class GitHubJobsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void purgeFetchInsertQuery() {
-    _run(() => repository.purgeFetchInsertQuery());
+  void fetchPurgeInsertQuery() {
+    _run(() => repository.fetchPurgeInsertQuery());
   }
 
   void insertGitHubJob(GitHubJob gitHubJob) {

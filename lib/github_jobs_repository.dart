@@ -54,7 +54,7 @@ class GitHubJobsRepository {
     return dao.fromList(maps);
   }
 
-  Future<List<GitHubJob>> purgeFetchInsertQuery() async {
+  Future<List<GitHubJob>> fetchPurgeInsertQuery() async {
     List<GitHubJob> jobs = await fetchJobs();
     await _deleteAll();
     await insertAll(jobs);
